@@ -30,15 +30,17 @@
 #endif
 
 #if defined(OS_LINUX)
- #define METADATA_API __attribute__((visibility("default")))
+ #define METADATA_API extern "C" __attribute__((visibility("default")))
 #else
 
-#ifndef _INCLUDE_METADATA_H
- #define METADATA_API _declspec(dllimport)
+#ifndef _INCLUDE_METADATA_H_
+ #define METADATA_API extern "C" _declspec(dllimport)
 #else
- #define METADATA_API _declspec(dllexport)
+ #define METADATA_API extern "C" _declspec(dllexport)
 #endif
 #endif
+
+namespace METADATA{
 
 #define METADATA_OK              0
 #define METADATA_ERROR           -1
@@ -122,7 +124,7 @@ int update_metadata_entry(metadata_t* src,
 
 /* updata metada entry */
 METADATA_API
-int find_metadata_entry(metadata_t* src,
+int find_metadata_entry_name(metadata_t* src,
                 const char* name,
                 metadata_entry_t& entry);
 
@@ -158,5 +160,46 @@ size_t calculate_metadata_entry_malloc_size(uint8_t type,
 /* dump metadata export json format*/
 METADATA_API
 int dump_metadata(metadata_t* src,std::string& str);
+
+}
+
+class CMetaData
+{
+public:    
+    virtual int32_t get_metadata_entry_count() = 0;
+    
+    virtual int add_metadata_entry(uint32_t tag,
+            const void *data,
+            uint32_t data_count,
+            uint32_t object_size = 0/*only obejct use*/) = 0;
+    
+    virtual int update_metadata_entry(const METADATA::metadata_entry_t& entry) = 0;
+    
+    virtual int find_metadata_entry_name(const char* name,
+                    METADATA::metadata_entry_t& entry) = 0;
+    
+    virtual int find_metadata_entry(uint32_t tag,
+            METADATA::metadata_entry_t& entry) = 0;
+    
+    virtual int merge_metadata(CMetaData* src) = 0;
+    
+    virtual CMetaData* copy_metadata() = 0;
+    
+    virtual int delete_metadata_entry(uint32_t tag) = 0;
+    
+    virtual int get_local_metadata_tag_type(uint32_t tag) = 0;
+    
+    virtual size_t calculate_metadata_entry_malloc_size(uint8_t type,
+            size_t data_count) = 0;
+    
+    virtual int dump_metadata(std::string& str) = 0;
+
+    virtual ~CMetaData() = 0;
+};
+
+METADATA_API CMetaData* CreateMetaData();
+
+METADATA_API void DestroyMetaData(CMetaData* pCMetaData);
+
 
 #endif

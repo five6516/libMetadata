@@ -9,8 +9,9 @@ set (Tutorial_VERSION_MINOR 0)
 set(CMAKE_CXX_STANDARD 17)
 
 set(src_file ${PROJECT_SOURCE_DIR}/src/metadata.cpp  ${PROJECT_SOURCE_DIR}/src/metadata_tag_info.cpp)
+set(src_file_cpp ${PROJECT_SOURCE_DIR}/src/metadatacpp.cpp)
 
-add_library(${PROJECT_NAME} SHARED ${src_file}) 
+add_library(${PROJECT_NAME} SHARED ${src_file} ${src_file_cpp}) 
 
 # 添加包含目录
 include_directories(${PROJECT_SOURCE_DIR}/include)

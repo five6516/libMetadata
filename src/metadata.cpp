@@ -6,6 +6,8 @@
 
 #include <limits.h>
 
+namespace METADATA{
+
 extern tag_info_t metadata_section_bounds[METADATA_SECTION_COUNT];
 
 /* all data pointer */
@@ -273,7 +275,7 @@ int update_metadata_entry(metadata_t* src,
     return METADATA_OK;
 }
 
-int find_metadata_entry(metadata_t* src,
+int find_metadata_entry_name(metadata_t* src,
                 const char* name,
                 metadata_entry_t& entry)
 {
@@ -321,7 +323,7 @@ int find_metadata_entry(metadata_t* src,
         return METADATA_ERROR;
     }
 
-    return find_metadata_entry(src,
+    return find_metadata_entry_name(src,
                 metadata_section_bounds[tag].tag_name,
                 entry);
 }
@@ -570,4 +572,6 @@ int dump_metadata(metadata_t* src,std::string& str)
 
     str = j.dump();
     return METADATA_OK;
+}
+
 }

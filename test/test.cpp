@@ -23,6 +23,7 @@ void CHECK(bool result)
 }
 #endif
 
+using namespace METADATA;
 
 class testClass
 {
@@ -259,8 +260,47 @@ void test()
         CHECK(METADATA_OK == find_metadata_entry(m2, METADATA_MAIN3, entry));
         CHECK(entry.data.i64[0] == 5555);
 
+        metadata_t* m3 = copy_metadata(m1);
+
         CHECK(METADATA_OK == delete_metadata(m1));
         CHECK(METADATA_OK == delete_metadata(m2));
+        CHECK(METADATA_OK == delete_metadata(m3));
+    }
+
+    //class test
+    {
+        CMetaData* pMetadata = CreateMetaData();
+
+        int32_t a = 123;
+        CHECK(pMetadata->add_metadata_entry(METADATA_MAIN1, &a, 1) == METADATA_OK);
+
+        CHECK(pMetadata->add_metadata_entry(METADATA_MAIN1, &a, 1) != METADATA_OK);
+
+        CHECK(pMetadata->get_metadata_entry_count() == 1);
+
+        metadata_entry_t entry;
+        CHECK(METADATA_OK == pMetadata->find_metadata_entry(METADATA_MAIN1, entry));
+        CHECK(entry.data.i32[0] == 123);
+
+        entry.data.i32[0] = 234;
+        CHECK(METADATA_OK == pMetadata->update_metadata_entry(entry));
+
+        metadata_entry_t entry2;
+        CHECK(METADATA_OK == pMetadata->find_metadata_entry(METADATA_MAIN1, entry2));
+        CHECK(entry2.data.i32[0] == 234);
+
+        CMetaData* pMetadata2 = pMetadata->copy_metadata();
+        metadata_entry_t entry3;
+        CHECK(METADATA_OK == pMetadata2->find_metadata_entry(METADATA_MAIN1, entry3));
+        CHECK(entry3.data.i32[0] == 234);
+        DestroyMetaData(pMetadata2);
+
+        CHECK(METADATA_OK == pMetadata->delete_metadata_entry(METADATA_MAIN1));
+        CHECK(METADATA_OK != pMetadata->find_metadata_entry(METADATA_MAIN1, entry));
+
+        CHECK(pMetadata->get_metadata_entry_count() == 0);
+        
+        DestroyMetaData(pMetadata);
     }
 }
 
